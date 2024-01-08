@@ -53,3 +53,10 @@ variable "scope_id" {
 variable "artifact_repo" {
   type = string
 }
+
+variable "iap_backend_service_id" {
+  # this is a bit of a tricky one, you can only get this after the backend service is created. So this needs to be updated after the initial Terraform ran.
+  # you can get this by doing "gcloud compute backend-services describe jit-sandbox-lb-backend-default --global --format 'value(id)'"
+  type = string
+  default = ""
+}

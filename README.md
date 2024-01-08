@@ -46,6 +46,7 @@ export IAP_MEMBERS=<a list of users or groups>
 export SCOPE_TYPE=<type of scope, see terraform variables.tf>
 export SCOPE_ID=<ID, see terraform variables.tf>
 export ARTIFACT_REPO=<artifact repository id>
+export IAP_BACKEND_SERVICE_ID=$(gcloud compute backend-services describe jit-sandbox-lb-backend-default --global --format 'value(id)')
 
 terraform apply -var project_id=${PROJECT_ID} \
     -var region=${REGION} \
@@ -56,7 +57,8 @@ terraform apply -var project_id=${PROJECT_ID} \
     -var iap_members=${IAP_MEMBERS} \
     -var scope_type=${SCOPE_TYPE} \
     -var scope_id=${SCOPE_ID} \
-    -var artifact_repo=${ARTIFACT_REPO}
+    -var artifact_repo=${ARTIFACT_REPO} \
+    -var iap_backend_service_id=${IAP_BACKEND_SERVICE_ID}
 ```
 
 ## Credit

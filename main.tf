@@ -129,7 +129,7 @@ resource "google_cloud_run_service" "jit_cloudrun_service" {
         }
         env {
           name  = "IAP_BACKEND_SERVICE_ID"
-          value = "jit-serverless-neg"
+          value = var.iap_backend_service_id
         }
       }
     }
