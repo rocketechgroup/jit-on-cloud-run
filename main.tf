@@ -45,7 +45,7 @@ resource "google_project_iam_binding" "jit_access_cloudasset_viewer" {
   ]
 }
 
-
+# Create a Cloud Run service to host the JIT service
 resource "google_cloud_run_service" "jit_cloudrun_service" {
   name     = "jit-on-cloudrun"
   location = var.region
@@ -91,6 +91,7 @@ resource "google_cloud_run_service" "jit_cloudrun_service" {
   }
 }
 
+# Create a regional network endpoint group for the serverless NEGs.
 resource "google_compute_region_network_endpoint_group" "serverless_neg" {
   provider              = google
   name                  = "jit-serverless-neg"
