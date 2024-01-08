@@ -45,51 +45,6 @@ resource "google_project_iam_binding" "jit_access_cloudasset_viewer" {
   ]
 }
 
-resource "google_compute_region_network_endpoint_group" "serverless_neg" {
-  provider              = google
-  name                  = "jit-serverless-neg"
-  network_endpoint_type = "SERVERLESS"
-  region                = var.region
-  cloud_run {
-    service = google_cloud_run_service.jit_cloudrun_service.name
-  }
-}
-
-module "lb-http" {
-  source  = "GoogleCloudPlatform/lb-http/google//modules/serverless_negs"
-  version = "~> 9.0"
-
-  project = var.project_id
-  name    = var.lb_name
-
-  ssl                             = true
-  managed_ssl_certificate_domains = [var.domain]
-  https_redirect                  = true
-
-  backends = {
-    default = {
-      description = null
-      groups      = [
-        {
-          group = google_compute_region_network_endpoint_group.serverless_neg.id
-        }
-      ]
-      enable_cdn             = false
-      security_policy        = null
-      custom_request_headers = null
-
-      iap_config = {
-        enable               = true
-        oauth2_client_id     = var.iap_client_id
-        oauth2_client_secret = var.iap_client_secret
-      }
-      log_config = {
-        enable      = false
-        sample_rate = null
-      }
-    }
-  }
-}
 
 resource "google_cloud_run_service" "jit_cloudrun_service" {
   name     = "jit-on-cloudrun"
@@ -136,7 +91,53 @@ resource "google_cloud_run_service" "jit_cloudrun_service" {
   }
 }
 
-# IAM policies for user / groups
+resource "google_compute_region_network_endpoint_group" "serverless_neg" {
+  provider              = google
+  name                  = "jit-serverless-neg"
+  network_endpoint_type = "SERVERLESS"
+  region                = var.region
+  cloud_run {
+    service = google_cloud_run_service.jit_cloudrun_service.name
+  }
+}
+
+module "lb-http" {
+  source  = "GoogleCloudPlatform/lb-http/google//modules/serverless_negs"
+  version = "~> 9.0"
+
+  project = var.project_id
+  name    = var.lb_name
+
+  ssl                             = true
+  managed_ssl_certificate_domains = [var.domain]
+  https_redirect                  = true
+
+  backends = {
+    default = {
+      description = null
+      groups      = [
+        {
+          group = google_compute_region_network_endpoint_group.serverless_neg.id
+        }
+      ]
+      enable_cdn             = false
+      security_policy        = null
+      custom_request_headers = null
+
+      iap_config = {
+        enable               = true
+        oauth2_client_id     = var.iap_client_id
+        oauth2_client_secret = var.iap_client_secret
+      }
+      log_config = {
+        enable      = false
+        sample_rate = null
+      }
+    }
+  }
+}
+
+# IAM policies for user / groups that gets granted access to use the JIT service via IAP
 data "google_iam_policy" "iap" {
   binding {
     role    = "roles/iap.httpsResourceAccessor"
