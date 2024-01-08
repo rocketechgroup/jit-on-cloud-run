@@ -7,13 +7,6 @@ resource "google_compute_network" "jitaccess_vpc" {
   auto_create_subnetworks = false
 }
 
-resource "google_compute_subnetwork" "jitaccess_subnet" {
-  name          = var.subnet_name
-  ip_cidr_range = "10.10.0.0/24"
-  region        = var.region
-  network       = google_compute_network.jitaccess_vpc.name
-}
-
 resource "google_vpc_access_connector" "connector" {
   name          = "jit-vpc-connector"
   region        = var.region
